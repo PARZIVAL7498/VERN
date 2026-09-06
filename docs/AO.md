@@ -6,16 +6,17 @@ Judges review **AO session count** in the demo video. Use [Agent Orchestrator](h
 
 1. Install AO desktop: https://aoagents.dev/docs/installation/
 2. `gh auth login` (GitHub projects)
-3. Add this repo: **Add project** → `D:\VERN`
+3. Add this repo: **Add project** → path to this `VERN` checkout
 4. Optional CLI (daemon must be running via desktop):
 
 ```bash
 ao status
 ao doctor
-ao project add --path D:/VERN --worker-agent cursor --name vern
+ao project add --path . --worker-agent cursor --name vern
 ao spawn --project vern --name core-pkg --kind worker --mode chat --prompt "Harden @vern/core governance and ERP stubs"
 ao spawn --project vern --name api-routes --kind worker --mode chat --prompt "Extend Fastify AP invoice APIs and SoD"
 ao spawn --project vern --name web-cfo --kind worker --mode chat --prompt "CFO dashboard and exception queue UX"
+ao spawn --project vern --name worker-batch --kind worker --mode chat --prompt "Batch worker for invoice ingest"
 ao session ls
 ```
 

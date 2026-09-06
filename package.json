@@ -2,12 +2,14 @@
   "name": "vern",
   "private": true,
   "version": "0.2.0",
-  "description": "VERN — personal CFO assistant (voice + text)",
+  "description": "VERN - personal CFO assistant (voice + text)",
   "scripts": {
     "dev": "pnpm --filter @vern/vern dev",
     "build": "pnpm --filter @vern/vern build",
     "seed": "pnpm --filter @vern/vern seed",
-    "start": "pnpm --filter @vern/vern start"
+    "start": "pnpm --filter @vern/vern start",
+    "test": "pnpm --filter @vern/core test",
+    "typecheck": "pnpm --filter @vern/core typecheck"
   },
   "engines": {
     "node": ">=20"

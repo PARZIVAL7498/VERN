@@ -1,0 +1,33 @@
+# Render Blueprint — https://dashboard.render.com/blueprints
+# 1. New → Blueprint → connect this repo
+# 2. Set TENSORMUX_API_KEY in the dashboard (marked sync: false)
+#
+# Free tier: filesystem is ephemeral (demo re-seeds). For sticky memory,
+# upgrade the service and attach a disk mounted at /var/data, then set
+# VERN_DATA_DIR=/var/data
+services:
+  - type: web
+    name: vern
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npx pnpm@9.15.0 install && npx pnpm@9.15.0 --filter @vern/vern build
+    startCommand: npx pnpm@9.15.0 --filter @vern/vern start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: TENSORMUX_API_KEY
+        sync: false
+      - key: TENSORMUX_BASE_URL
+        value: https://api.tensormux.com/v1
+      - key: TENSORMUX_MODEL
+        value: glm-4-7-flash
+      - key: VERN_LLM_REPLY
+        value: "1"
+      - key: VERN_LEARN
+        value: "1"
+      - key: VERN_LEARN_EVERY_N
+        value: "3"
+      - key: VERN_DATA_DIR
+        value: ./data
