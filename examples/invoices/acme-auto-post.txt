@@ -1,0 +1,11 @@
+INVOICE
+Invoice Number: INV-EX-AUTO
+Invoice Date: 2026-09-01
+Vendor Name: Acme Supplies Co
+PO Number: PO-1003
+Currency: USD
+Subtotal: 4500
+Tax: 0
+Total Amount: 4500
+Bank Account ****4412
+1) Office paper reams 225 x 20 = 4500

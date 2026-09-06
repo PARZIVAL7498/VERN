@@ -1,0 +1,9 @@
+INVOICE
+Invoice Number: INV-EX-BANK
+Invoice Date: 2026-09-03
+Vendor Name: Northwind Paper
+PO Number: PO-1002
+Currency: USD
+Total Amount: 4800
+Bank Account ****1111
+1) Specialty paper 200 x 24 = 4800

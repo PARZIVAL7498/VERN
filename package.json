@@ -1,0 +1,17 @@
+{
+  "name": "vern",
+  "private": true,
+  "version": "0.1.0",
+  "description": "VERN — Autonomous Office of the CFO (Track 2) + Jarvis personal assistant",
+  "scripts": {
+    "dev": "pnpm -r --parallel --filter @vern/api --filter @vern/web dev",
+    "dev:jarvis": "pnpm --filter @vern/jarvis dev",
+    "dev:all": "pnpm -r --parallel --filter @vern/api --filter @vern/web --filter @vern/jarvis dev",
+    "build": "pnpm -r build",
+    "seed": "pnpm --filter @vern/api seed"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@9.15.0"
+}
