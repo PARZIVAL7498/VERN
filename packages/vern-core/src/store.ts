@@ -228,35 +228,38 @@ export class Store {
   async persist(): Promise<string | null> {
     if (!this.dataDir) return null;
     await mkdir(this.dataDir, { recursive: true });
-    const filePath = path.join(this.dataDir, 'vern-store.json');
+    const filePath = path.join(this.dataDir, 'company-store.json');
     await writeFile(filePath, JSON.stringify(this.snapshot(), null, 2), 'utf8');
     return filePath;
   }
 
   async load(): Promise<boolean> {
     if (!this.dataDir) return false;
-    const filePath = path.join(this.dataDir, 'vern-store.json');
-    try {
-      const raw = await readFile(filePath, 'utf8');
-      const data = JSON.parse(raw) as StoreSnapshot;
-      this.tenant = data.tenant;
-      this.entities = data.entities;
-      this.vendors = data.vendors;
-      this.purchaseOrders = data.purchaseOrders;
-      this.invoices = data.invoices;
-      this.users = data.users;
-      this.rules = data.rules;
-      this.audits = data.audits;
-      this.decisions = data.decisions;
-      this.exceptions = data.exceptions;
-      this.overrides = data.overrides;
-      this.sampleTexts = data.sampleTexts ?? {};
-      this.erp = new NetSuiteStub(data.tenant.id);
-      for (const v of data.vendors) this.erp.upsertVendor(v);
-      for (const po of data.purchaseOrders) this.erp.upsertPurchaseOrder(po);
-      return true;
-    } catch {
-      return false;
+    for (const name of ['company-store.json', 'vern-store.json']) {
+      const filePath = path.join(this.dataDir, name);
+      try {
+        const raw = await readFile(filePath, 'utf8');
+        const data = JSON.parse(raw) as StoreSnapshot;
+        this.tenant = data.tenant;
+        this.entities = data.entities;
+        this.vendors = data.vendors;
+        this.purchaseOrders = data.purchaseOrders;
+        this.invoices = data.invoices;
+        this.users = data.users;
+        this.rules = data.rules;
+        this.audits = data.audits;
+        this.decisions = data.decisions;
+        this.exceptions = data.exceptions;
+        this.overrides = data.overrides;
+        this.sampleTexts = data.sampleTexts ?? {};
+        this.erp = new NetSuiteStub(data.tenant.id);
+        for (const v of data.vendors) this.erp.upsertVendor(v);
+        for (const po of data.purchaseOrders) this.erp.upsertPurchaseOrder(po);
+        return true;
+      } catch {
+        // try next filename
+      }
     }
+    return false;
   }
 }

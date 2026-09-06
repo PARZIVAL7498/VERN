@@ -1,0 +1,240 @@
+:root {
+  --paper: #f3efe6;
+  --ink: #14201a;
+  --muted: #5a6b62;
+  --forest: #0b3d2e;
+  --forest-soft: rgba(11, 61, 46, 0.08);
+  --line: rgba(20, 32, 26, 0.12);
+  --critical: #9b2c2c;
+  --watch: #8a5a12;
+  --ok: #1f6b4a;
+  --panel: #fffdf8;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  color: var(--ink);
+  font-family: var(--font-sans), 'Segoe UI', sans-serif;
+  background:
+    radial-gradient(900px 480px at 12% -8%, rgba(11, 61, 46, 0.1), transparent 55%),
+    radial-gradient(700px 420px at 100% 0%, rgba(138, 90, 18, 0.07), transparent 50%),
+    linear-gradient(180deg, #ebe4d6 0%, var(--paper) 42%, #e7e0d2 100%);
+}
+
+button,
+input {
+  font: inherit;
+}
+
+.shell {
+  max-width: 880px;
+  margin: 0 auto;
+  min-height: 100vh;
+  padding: 1.75rem 1.25rem 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.brand {
+  font-family: var(--font-display), Georgia, serif;
+  font-size: clamp(2.4rem, 6vw, 3.4rem);
+  letter-spacing: -0.02em;
+  color: var(--forest);
+  margin: 0;
+  line-height: 1;
+}
+
+.sub {
+  color: var(--muted);
+  margin: 0.35rem 0 0;
+  font-size: 1.05rem;
+  max-width: 36rem;
+}
+
+.brief {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 0.95rem 1.1rem;
+  display: grid;
+  gap: 0.35rem;
+}
+
+.brief strong {
+  color: var(--forest);
+  font-family: var(--font-display), Georgia, serif;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chip {
+  border: 1px solid var(--line);
+  background: transparent;
+  color: var(--ink);
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+
+.chip:hover {
+  background: var(--forest-soft);
+}
+
+.chip.active {
+  background: var(--forest);
+  color: #f7f3ea;
+  border-color: var(--forest);
+}
+
+.crit {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.45rem;
+  margin-bottom: 0.4rem;
+}
+
+.crit.Critical {
+  background: rgba(155, 44, 44, 0.12);
+  color: var(--critical);
+}
+
+.crit.Watch {
+  background: rgba(138, 90, 18, 0.14);
+  color: var(--watch);
+}
+
+.crit.OK {
+  background: rgba(31, 107, 74, 0.12);
+  color: var(--ok);
+}
+
+.chat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  overflow: auto;
+  max-height: calc(100vh - 320px);
+  padding: 0.35rem 0;
+}
+
+.bubble {
+  max-width: 88%;
+  padding: 0.85rem 1rem;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  border: 1px solid var(--line);
+  background: var(--panel);
+}
+
+.bubble.user {
+  align-self: flex-end;
+  background: var(--forest-soft);
+}
+
+.bubble.assistant {
+  align-self: flex-start;
+}
+
+.bubble .meta {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--muted);
+  margin-bottom: 0.3rem;
+}
+
+.tools {
+  margin-top: 0.55rem;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+.warn {
+  color: var(--watch);
+  font-size: 0.9rem;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.composer input {
+  width: 100%;
+  border: 1px solid var(--line);
+  background: var(--panel);
+  padding: 0.85rem 1rem;
+  color: var(--ink);
+}
+
+.btn {
+  border: 1px solid var(--forest);
+  background: var(--forest);
+  color: #f7f3ea;
+  padding: 0.85rem 1.1rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--forest);
+}
+
+.btn.ghost.mic.active {
+  background: rgba(155, 44, 44, 0.12);
+  border-color: var(--critical);
+  color: var(--critical);
+}
+
+.voice-row {
+  align-items: center;
+}
+
+.voice-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.voice-select {
+  border: 1px solid var(--line);
+  background: var(--panel);
+  color: var(--ink);
+  padding: 0.45rem 0.6rem;
+  max-width: 14rem;
+}
+
+@media (max-width: 640px) {
+  .composer {
+    grid-template-columns: 1fr 1fr;
+  }
+  .composer input {
+    grid-column: 1 / -1;
+  }
+  .voice-select {
+    max-width: 11rem;
+  }
+}

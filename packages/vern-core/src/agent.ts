@@ -27,6 +27,7 @@ export interface TensorMuxChatOptions {
   messages: ChatMessage[];
   model?: string;
   temperature?: number;
+  maxTokens?: number;
   apiKey?: string;
   baseUrl?: string;
   signal?: AbortSignal;
@@ -78,6 +79,7 @@ export async function tensorMuxChat(
       model,
       messages: options.messages,
       temperature: options.temperature ?? 0.2,
+      ...(options.maxTokens ? { max_tokens: options.maxTokens } : {}),
     }),
     signal: options.signal,
   });

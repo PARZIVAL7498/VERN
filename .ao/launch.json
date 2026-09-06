@@ -2,18 +2,11 @@
   "version": 1,
   "apps": [
     {
-      "name": "vern-web",
-      "command": "npx pnpm@9.15.0 --filter @vern/web dev",
+      "name": "vern",
+      "command": "npx pnpm@9.15.0 --filter @vern/vern dev",
       "cwd": ".",
       "port": 3000,
       "url": "http://127.0.0.1:3000"
-    },
-    {
-      "name": "vern-api",
-      "command": "npx pnpm@9.15.0 --filter @vern/api dev",
-      "cwd": ".",
-      "port": 4000,
-      "url": "http://127.0.0.1:4000"
     }
   ]
 }

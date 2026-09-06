@@ -1,14 +1,13 @@
 {
   "name": "vern",
   "private": true,
-  "version": "0.1.0",
-  "description": "VERN — Autonomous Office of the CFO (Track 2) + Jarvis personal assistant",
+  "version": "0.2.0",
+  "description": "VERN — personal CFO assistant (voice + text)",
   "scripts": {
-    "dev": "pnpm -r --parallel --filter @vern/api --filter @vern/web dev",
-    "dev:jarvis": "pnpm --filter @vern/jarvis dev",
-    "dev:all": "pnpm -r --parallel --filter @vern/api --filter @vern/web --filter @vern/jarvis dev",
-    "build": "pnpm -r build",
-    "seed": "pnpm --filter @vern/api seed"
+    "dev": "pnpm --filter @vern/vern dev",
+    "build": "pnpm --filter @vern/vern build",
+    "seed": "pnpm --filter @vern/vern seed",
+    "start": "pnpm --filter @vern/vern start"
   },
   "engines": {
     "node": ">=20"

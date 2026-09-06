@@ -1,4 +1,4 @@
-/** @vern/core — Autonomous Office of the CFO shared library */
+/** @vern/core — Personal CFO VERN (company stubs + personal memory) */
 
 export * from './ids.js';
 export * from './domain.js';
@@ -16,3 +16,6 @@ export * from './learn.js';
 export * from './close.js';
 export * from './judgment.js';
 export * from './assistant.js';
+export * from './personal.js';
+export * from './ceo-learn.js';
+export * from './cfo-agent.js';
