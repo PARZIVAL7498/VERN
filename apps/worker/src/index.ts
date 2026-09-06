@@ -1,12 +1,12 @@
 /**
- * Batch worker — processes high-volume invoice text jobs against @vern/core.
- * In-memory queue (Redis optional later). Polls API or runs local Store when
- * VERN_WORKER_MODE=local (default).
+ * Batch worker — posts invoice text jobs to the API (preferred) or processes
+ * against a local Store when VERN_WORKER_MODE=local.
  */
 import { Store, processInvoice } from '@vern/core';
 
 const INTERVAL_MS = Number(process.env.VERN_WORKER_INTERVAL_MS ?? 5000);
-const API = process.env.NEXT_PUBLIC_API_URL ?? process.env.VERN_API_URL ?? 'http://127.0.0.1:4000';
+const API = process.env.VERN_API_URL ?? process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:4000';
+const MODE = process.env.VERN_WORKER_MODE ?? 'api';
 
 interface QueueItem {
   id: string;
@@ -21,36 +21,37 @@ export function enqueueLocal(text: string): string {
   return id;
 }
 
+const SAMPLE = [
+  'INVOICE',
+  'Invoice Number: INV-WORKER-1',
+  'Invoice Date: 2026-09-05',
+  'Vendor Name: Acme Supplies Co',
+  'PO Number: PO-1003',
+  'Currency: USD',
+  'Total Amount: 800',
+  'Bank Account ****4412',
+  '1) Worker supplies 40 x 20 = 800',
+].join('\n');
+
 async function drainViaApi(): Promise<number> {
-  // Pull nothing from remote queue in demo — worker posts sample if BATCH_DEMO=1
-  if (process.env.BATCH_DEMO !== '1') return 0;
+  if (localQueue.length === 0 && process.env.BATCH_DEMO !== '1') return 0;
+
+  const items =
+    localQueue.length > 0
+      ? localQueue.splice(0, localQueue.length).map((j) => ({ text: j.text }))
+      : [{ text: SAMPLE }];
+
   const res = await fetch(`${API}/v1/batches/invoices`, {
     method: 'POST',
     headers: { 'content-type': 'application/json', 'x-vern-role': 'controller' },
-    body: JSON.stringify({
-      items: [
-        {
-          text: [
-            'INVOICE',
-            'Invoice Number: INV-BATCH-DEMO',
-            'Invoice Date: 2026-09-05',
-            'Vendor Name: Acme Supplies Co',
-            'PO Number: PO-1003',
-            'Currency: USD',
-            'Total Amount: 1200',
-            'Bank Account ****4412',
-            '1) Batch paper 60 x 20 = 1200',
-          ].join('\n'),
-        },
-      ],
-    }),
+    body: JSON.stringify({ items }),
   });
   if (!res.ok) {
     console.error('batch post failed', await res.text());
     return 0;
   }
   const body = (await res.json()) as { results?: unknown[] };
-  console.log(`batch demo posted results=${body.results?.length ?? 0}`);
+  console.log(`batch posted results=${body.results?.length ?? 0}`);
   process.env.BATCH_DEMO = '0';
   return body.results?.length ?? 0;
 }
@@ -83,10 +84,15 @@ async function drainLocal(store: Store): Promise<number> {
 }
 
 async function tick(store: Store): Promise<void> {
-  const viaApi = await drainViaApi();
-  const viaLocal = await drainLocal(store);
-  if (viaApi + viaLocal === 0) {
-    // heartbeat
+  if (MODE === 'local') {
+    await drainLocal(store);
+    return;
+  }
+  try {
+    await drainViaApi();
+  } catch (err) {
+    console.error('api drain failed, falling back to local', err);
+    await drainLocal(store);
   }
 }
 
@@ -96,20 +102,10 @@ async function main(): Promise<void> {
   if (!loaded || !store.tenant) {
     store.seedDemoData();
   }
-  console.log(`VERN worker started (interval=${INTERVAL_MS}ms) tenant=${store.tenant?.id}`);
-  enqueueLocal(
-    [
-      'INVOICE',
-      'Invoice Number: INV-WORKER-1',
-      'Invoice Date: 2026-09-05',
-      'Vendor Name: Acme Supplies Co',
-      'PO Number: PO-1003',
-      'Currency: USD',
-      'Total Amount: 800',
-      'Bank Account ****4412',
-      '1) Worker supplies 40 x 20 = 800',
-    ].join('\n'),
+  console.log(
+    `VERN worker started mode=${MODE} interval=${INTERVAL_MS}ms api=${API} tenant=${store.tenant?.id}`,
   );
+  enqueueLocal(SAMPLE);
   await tick(store);
   setInterval(() => {
     void tick(store);

@@ -158,22 +158,37 @@ async function buildServer() {
 
   app.post('/v1/invoices/ingest', async (req, reply) => {
     const auth = authFromHeaders(req.headers as Record<string, string | string[] | undefined>);
-    const body = ingestSchema.parse(req.body ?? {});
     if (!store.tenant || !store.rules) {
       return reply.code(500).send({ error: 'store_not_seeded' });
     }
     const entityId = store.entities[0]?.id ?? `${store.tenant.id}-entity-hq`;
-    const document: string | StructuredInvoiceFallback =
-      body.text ??
-      (body.invoice
-        ? (body.invoice as unknown as StructuredInvoiceFallback)
-        : (store.sampleTexts.clean ?? 'INVOICE\nTotal Amount: 100'));
+
+    const contentType = String(req.headers['content-type'] ?? '');
+    let document: Buffer | string | StructuredInvoiceFallback;
+    let sampleText = false;
+
+    if (contentType.includes('multipart/form-data')) {
+      const file = await req.file();
+      if (!file) {
+        return reply.code(400).send({ error: 'file_required', message: 'Attach an invoice PDF/text file' });
+      }
+      document = await file.toBuffer();
+      sampleText = false;
+    } else {
+      const body = ingestSchema.parse(req.body ?? {});
+      document =
+        body.text ??
+        (body.invoice
+          ? (body.invoice as unknown as StructuredInvoiceFallback)
+          : (store.sampleTexts.clean ?? 'INVOICE\nTotal Amount: 100'));
+      sampleText = body.sampleText ?? typeof document === 'string';
+    }
 
     const result = await processInvoice({
       tenantId: store.tenant.id,
       entityId,
       document,
-      sampleText: body.sampleText ?? typeof document === 'string',
+      sampleText,
       erp: store.erp,
       rules: store.rules,
       previousInvoices: store.invoices,
@@ -270,8 +285,9 @@ async function buildServer() {
   app.get('/v1/exceptions', async (req) => {
     const q = req.query as { role?: string };
     let items = store.exceptions.filter((e) => e.status === 'open' || e.status === 'in_review');
-    if (q.role === 'controller' || q.role === 'ap_clerk') {
-      items = items.filter((e) => !e.assignedRole || e.assignedRole === q.role);
+    // Controllers/CFOs see the full open queue; clerks only see clerk-routed (or unassigned) items.
+    if (q.role === 'ap_clerk') {
+      items = items.filter((e) => !e.assignedRole || e.assignedRole === 'ap_clerk');
     }
     if (!store.rules) return { exceptions: items, cards: [] };
     const seen = new Set<string>();

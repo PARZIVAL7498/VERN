@@ -8,7 +8,9 @@
     "dev:jarvis": "pnpm --filter @vern/jarvis dev",
     "dev:all": "pnpm -r --parallel --filter @vern/api --filter @vern/web --filter @vern/jarvis dev",
     "build": "pnpm -r build",
-    "seed": "pnpm --filter @vern/api seed"
+    "seed": "pnpm --filter @vern/api seed",
+    "test": "pnpm --filter @vern/core test",
+    "typecheck": "pnpm --filter @vern/core typecheck"
   },
   "engines": {
     "node": ">=20"
